@@ -1,20 +1,17 @@
+'use server';
+
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from 'next/headers';
-
+import Navigation from './Navigation';
 import type { Database } from '@/lib/database.types';
 
-const Home = async () => {
+const SupabaseListener = async () => {
   const supabase = createServerComponentClient<Database>({ cookies });
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
-  return (
-    <div className="text-center text-xl">
-      {session? <div>ログイン済み</div> : <div>未ログイン</div>}
-    </div>
-  );
+  return <Navigation session={session}/>
 };
 
-export default Home;
+export default SupabaseListener;
