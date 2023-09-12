@@ -21,7 +21,7 @@ const schema = z.object({
 const Profile = () => {
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
-  const [loading, useLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<File | null>(null);
   const [message, setMessage] = useState('');
   const [fileMessage, setFileMessage] = useState('');
@@ -73,7 +73,59 @@ const Profile = () => {
   }, [])
 
   const onSubmit: SubmitHandler<Schema> = async (data) => {
+    setLoading(true);
+    setMessage('');
 
+    try {
+      let avatar_url = user.avatar_url;
+
+      if(avatar) {
+        const { data: storageData, error: storageError } = await supabase
+          .storage
+          .from('profile')
+          .upload(`${user.id}/${uuidv4()}`, avatar);
+
+          if(storageError) {
+            setMessage('エラーが発生しました。' + storageError.message);
+            return;
+          }
+
+          if(avatar_url) {
+            const fileName = avatar_url.split('/').slice(-1)[0];
+            await supabase.storage.from('profile').remove([`${user.id}/${fileName}`]);
+          }
+
+          const { data: urlData } = await supabase
+            .storage
+            .from('profile')
+            .getPublicUrl(storageData.path);
+          
+          avatar_url = urlData.publicUrl;
+
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+              name: data.name,
+              introduce: data.introduce,
+              avatar_url,
+            })
+            .eq('id', user.id);
+          
+          if(updateError) {
+            setMessage('エラーが発生しました。' + updateError.message);
+            return;
+          }
+
+          setMessage('プロフィールを更新しました。');
+      }
+
+    } catch(error) {
+      setMessage('エラーが発生しました。' + error);
+      return;
+    } finally {
+      setLoading(false);
+      router.refresh();
+    }
   }
 
   return (
