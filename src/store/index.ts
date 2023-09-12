@@ -12,4 +12,4 @@ const useStore = create<StateType>((set) => ({
   setUser: (payload) => set({ user: payload }),
 }))
 
-export default useStore
+export default useStore;
