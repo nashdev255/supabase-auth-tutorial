@@ -77,7 +77,20 @@ const Profile = () => {
   }
 
   return (
-    <div></div>
+    <div>
+      <div className='text-center font-bold text-xl mb-10'>プロフィール</div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className='mb-5'>
+          <div className='flex flex-col text-sm items-center justify-center mb-5'>
+            <div className='relative w-24 h-24 mb-5'>
+              <Image src={avatarUrl} className='rounded-full object-cover' alt='avatar' fill />
+            </div>
+            <input type="file" id='avatar' onChange={onUploadImage} />
+            {fileMessage && <div className='text-center text-red-500 my-5'>{fileMessage}</div>}
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 
