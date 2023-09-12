@@ -11,7 +11,31 @@ const SupabaseListener = async () => {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  return <Navigation session={session}/>
+
+  let profile = null;
+
+  if(session) {
+    const { data: currentProfile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', session.user.id)
+    .single();
+
+    profile = currentProfile;
+
+    if(currentProfile && currentProfile.email !== session.user.email) {
+      const { data: updateProfile } = await supabase
+        .from('profiles')
+        .update({ email: session.user.email })
+        .match({ id: session.user.id })
+        .select('*')
+        .single();
+
+      profile = updateProfile;
+    }
+  }
+
+  return <Navigation session={session} profile={profile}/>
 };
 
 export default SupabaseListener;
