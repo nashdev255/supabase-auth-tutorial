@@ -12,7 +12,26 @@ const Logout = () => {
   const [message, setMessage] = useState('');
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
 
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if(error) {
+        setMessage('エラーが発生しました。' + error.message);
+        return;
+      }
+
+      router.push('/');
+
+    } catch(error) {
+      setMessage('エラーが発生しました。' + error);
+      return;
+    } finally {
+      setLoading(false);
+      router.refresh();
+    }
   }
 
   return (
