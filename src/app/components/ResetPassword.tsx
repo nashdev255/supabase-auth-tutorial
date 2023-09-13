@@ -29,7 +29,28 @@ const ResetPassword = () => {
   })
 
   const onSubmit: SubmitHandler<Schema> = async (data) => {
+    setLoading(true);
+    setMessage('');
 
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: `${location.origin}/auth/reset-password/confirm`,
+      })
+
+      if(error) {
+        setMessage('エラーが発生しました。' + error.message);
+        return;
+      }
+
+      setMessage('パスワードリセットに必要なメールを送信しました。');
+      
+    } catch(error) {
+      setMessage('エラーが発生しました。' + error);
+      return;
+    } finally {
+      setLoading(false);
+      router.refresh();
+    }
   }
 
   return (
