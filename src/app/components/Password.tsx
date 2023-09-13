@@ -37,7 +37,29 @@ const Password = () => {
   })
 
   const onSubmit: SubmitHandler<Schema> = async (data) => {
+    setLoading(true);
+    setMessage('');
 
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: data.password,
+      })
+
+      if(error) {
+        setMessage('エラーが発生しました。' + error.message);
+        return;
+      }
+
+      reset();
+      setMessage('パスワードは正常に更新されました。');
+      
+    } catch(error) {
+      setMessage('エラーが発生しました。' + error);
+      return;
+    } finally {
+      setLoading(false);
+      router.refresh();
+    }
   }
 
   return (
@@ -59,7 +81,7 @@ const Password = () => {
         <div className='mb-5'>
           <div className='text-sm mb-1 font-bold'>確認用パスワード</div>
           <input
-            type="text"
+            type="password"
             className='border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500'
             placeholder='確認用パスワード'
             id='confirmation'
