@@ -1,5 +1,6 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from 'next/headers';
+import HeadLine from '@/app/components/HeadLine'
 
 import type { Database } from '@/lib/database.types';
 
@@ -12,7 +13,11 @@ const Home = async () => {
 
   return (
     <div className="text-center text-xl">
-      {session? <div>ログイン済み</div> : <div>未ログイン</div>}
+      {session? (
+        <HeadLine/>
+      ) : (
+        <HeadLine/>
+      )}
     </div>
   );
 };
