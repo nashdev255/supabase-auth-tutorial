@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import * as z from 'zod';
 import type { Database } from '@/lib/database.types';
-import Loading from '../Loading';
+import Loading from '@/app/components/Loading';
 
 type Schema = z.infer<typeof schema>;
 

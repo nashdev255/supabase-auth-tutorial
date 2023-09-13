@@ -2,7 +2,7 @@
 import { FormEvent, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
-import Loading from '@/app/Loading';
+import Loading from '@/app/components/Loading';
 import type { Database } from '@/lib/database.types';
 
 const Logout = () => {
