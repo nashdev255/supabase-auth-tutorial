@@ -29,8 +29,38 @@ const Email = ({ email }: { email: string }) => {
     resolver: zodResolver(schema),
   })
 
-  const onSubmit: SubmitHandler<Schema> = async () => {
+  const onSubmit: SubmitHandler<Schema> = async (data) => {
+    setLoading(true);
+    setMessage('');
 
+    try {
+      const { error: updateUserError } = await supabase.auth.updateUser(
+        { email: data.email },
+        { emailRedirectTo: `${location.origin}/auth/login` },
+      )
+      if(updateUserError) {
+        setMessage('エラーが発生しました。' + updateUserError.message);
+        return;
+      }
+
+      setMessage('確認用のURLを記載したメールを送信しました。');
+
+      // signOutしないとcookieの情報と新しいメールアドレスとの整合性が取れなくなる
+      const { error: signOutError } = await supabase.auth.signOut();
+      if(signOutError) {
+        setMessage('エラーが発生しました。' + signOutError.message);
+        return;
+      }
+
+      router.push('/auth/login');
+
+    } catch(error) {
+      setMessage('エラーが発生しました。' + error);
+      return;
+    } finally {
+      setLoading(false);
+      router.refresh();
+    }
   }
 
   return (
